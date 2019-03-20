@@ -5,6 +5,9 @@ let x = 50;
 let y = 50;
 let speedx = 10;
 let speedy = 10;
+let red = 0;
+let blue = 0;
+let green = 0;
 
 
 
@@ -12,17 +15,29 @@ let speedy = 10;
 
 
 function update(progress) {
-    if(x+100 >= 800){
+    if((x+100) >= c.width){
         speedx = speedx * -1;
+        red = Math.floor(random() * 256);
+        blue = Math.floor(random() * 256);
+        green = Math.floor(random() * 256);
     }
     if(x <= 0){
         speedx = speedx * -1;
+        red = Math.floor(random() * 256);
+        blue = Math.floor(random() * 256);
+        green = Math.floor(random() * 256);
     }
-    if(y+100 >= 600){
+    if((y+100) >= c.height){
         speedy = speedy * -1;
+        red = Math.floor(random() * 256);
+        blue = Math.floor(random() * 256);
+        green = Math.floor(random() * 256);
     }
     if(y <= 0){
         speedy = speedy * -1;
+        red = Math.floor(random() * 256);
+        blue = Math.floor(random() * 256);
+        green = Math.floor(random() * 256);
     }
     x += speedx;
     y += speedy;
@@ -30,7 +45,7 @@ function update(progress) {
   
 function draw() {
     ctx.clearRect(0,0,800,600);
-    ctx.fillStyle = "red";
+    ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
     ctx.fillRect(x,y,100,100);
 }
   
