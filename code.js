@@ -51,13 +51,9 @@ function draw() {
 }
   
 function loop(timestamp) {
-   var progress = timestamp - lastRender
-  
-    update(progress)
-    draw()
-  
-    lastRender = timestamp
     window.requestAnimationFrame(loop)
+    update();
+    draw();
   }
-  var lastRender = 0
-  window.requestAnimationFrame(loop)
+ 
+loop();
