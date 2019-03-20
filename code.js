@@ -45,7 +45,8 @@ function update(progress) {
   
 function draw() {
     ctx.clearRect(0,0,800,600);
-    //ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+    ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+    console.log(ctx.fillStyle, x, y);
     ctx.fillRect(x,y,100,100);
 }
   
