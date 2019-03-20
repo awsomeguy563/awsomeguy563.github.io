@@ -50,7 +50,7 @@ function draw() {
     ctx.clearRect(0,0,800,600);
     ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
     console.log(ctx.fillStyle, x, y);
-    ctx.drawImage(img, 10, 10, 100, 100);
+    ctx.drawImage(img, x, y, 100, 100);
 }
   
 function loop() {
