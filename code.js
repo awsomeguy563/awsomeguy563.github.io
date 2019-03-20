@@ -3,6 +3,8 @@ var ctx = c.getContext("2d");
 
 let x = 50;
 let y = 50;
+let speedx = 10;
+let speedy = 10;
 
 
 
@@ -10,8 +12,20 @@ let y = 50;
 
 
 function update(progress) {
-    x += 10;
-    y +=10;
+    if(x+100 > 800){
+        speedx*=-1;
+    }
+    if(x < 0){
+        speedx*=-1;
+    }
+    if(y+100 > 600){
+        speedy*=-1;
+    }
+    if(y < 0){
+        speedy*=-1;
+    }
+    x += speedx;
+    y += speedy;
 }
   
 function draw() {
