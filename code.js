@@ -11,17 +11,16 @@ let y = 50;
 
 function update(progress) {
     x += 10;
-    y+=10;
+    y +=10;
 }
   
 function draw() {
+    ctx.clearRect(0,0,800,600);
     ctx.fillStyle = "red";
     ctx.fillRect(x,y,100,100);
 }
   
 function loop(timestamp) {
-    ctx.clearRect(0,0,800,600);
- 
    var progress = timestamp - lastRender
   
     update(progress)
