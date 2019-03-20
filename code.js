@@ -3,16 +3,13 @@ var ctx = c.getContext("2d");
 
 let x = 50;
 let y = 50;
+
 let speedx = 10;
 let speedy = 10;
+
 let red = 0;
 let blue = 0;
 let green = 0;
-
-
-
-
-
 
 function update(progress) {
     if((x+100) >= c.width){
@@ -21,24 +18,28 @@ function update(progress) {
         blue = Math.floor(Math.random() * 256);
         green = Math.floor(Math.random() * 256);
     }
+
     if(x <= 0){
         speedx = speedx * -1;
         red = Math.floor(Math.random() * 256);
         blue = Math.floor(Math.random() * 256);
         green = Math.floor(Math.random() * 256);
     }
+
     if((y+100) >= c.height){
         speedy = speedy * -1;
         red = Math.floor(Math.random() * 256);
         blue = Math.floor(Math.random() * 256);
         green = Math.floor(Math.random() * 256);
     }
+
     if(y <= 0){
         speedy = speedy * -1;
         red = Math.floor(Math.random() * 256);
         blue = Math.floor(Math.random() * 256);
         green = Math.floor(Math.random() * 256);
     }
+
     x += speedx;
     y += speedy;
 }
@@ -54,6 +55,6 @@ function loop(timestamp) {
     window.requestAnimationFrame(loop)
     update();
     draw();
-  }
+}
  
 loop();
