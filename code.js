@@ -12,17 +12,17 @@ let speedy = 10;
 
 
 function update(progress) {
-    if(x+100 > 800){
-        speedx*=-1;
+    if(x+100 >= 800){
+        speedx = speedx * -1;
     }
-    if(x < 0){
-        speedx*=-1;
+    if(x <= 0){
+        speedx = speedx * -1;
     }
-    if(y+100 > 600){
-        speedy*=-1;
+    if(y+100 >= 600){
+        speedy = speedy * -1;
     }
-    if(y < 0){
-        speedy*=-1;
+    if(y <= 0){
+        speedy = speedy * -1;
     }
     x += speedx;
     y += speedy;
