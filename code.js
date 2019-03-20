@@ -17,27 +17,27 @@ let green = 0;
 function update(progress) {
     if((x+100) >= c.width){
         speedx = speedx * -1;
-        red = Math.floor(random() * 256);
-        blue = Math.floor(random() * 256);
-        green = Math.floor(random() * 256);
+        red = Math.floor(Math.random() * 256);
+        blue = Math.floor(Math.random() * 256);
+        green = Math.floor(Math.random() * 256);
     }
     if(x <= 0){
         speedx = speedx * -1;
-        red = Math.floor(random() * 256);
-        blue = Math.floor(random() * 256);
-        green = Math.floor(random() * 256);
+        red = Math.floor(Math.random() * 256);
+        blue = Math.floor(Math.random() * 256);
+        green = Math.floor(Math.random() * 256);
     }
     if((y+100) >= c.height){
         speedy = speedy * -1;
-        red = Math.floor(random() * 256);
-        blue = Math.floor(random() * 256);
-        green = Math.floor(random() * 256);
+        red = Math.floor(Math.random() * 256);
+        blue = Math.floor(Math.random() * 256);
+        green = Math.floor(Math.random() * 256);
     }
     if(y <= 0){
         speedy = speedy * -1;
-        red = Math.floor(random() * 256);
-        blue = Math.floor(random() * 256);
-        green = Math.floor(random() * 256);
+        red = Math.floor(Math.random() * 256);
+        blue = Math.floor(Math.random() * 256);
+        green = Math.floor(Math.random() * 256);
     }
     x += speedx;
     y += speedy;
