@@ -4,8 +4,8 @@ var ctx = c.getContext("2d");
 let x = Math.random() * 500;
 let y = Math.random() * 500;
 
-let speedx = 5;
-let speedy = 5;
+let speedx = Math.random() * 5;
+let speedy = Math.random() * 5;
 
 let red = 0;
 let blue = 0;
