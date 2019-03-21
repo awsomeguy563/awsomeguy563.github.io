@@ -165,7 +165,7 @@ let Restart = function(){
   if(Object.keys(enemylist).length == 0){
     player1.num = 0;
     player1.radius =30;
-    for(let i = 0; i < 20; i++){
+    for(let i = 0; i < 30; i++){
       let id = Math.floor(Math.random() * 10);
       enemylist[id] = new Entity();
     }
