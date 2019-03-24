@@ -28,6 +28,13 @@ bking.src = "pics/BlackKing.png";
 let bqueen = new Image;
 bqueen.src = "pics/BlackQueen.png";
 
+let frame = new Image;
+frame.src = "pics/pixil-frame-0.png";
+
+
+
+let movecount = 0;
+
 
 let pieceDic = {}
 pieceDic["wp"] = wpawn;
@@ -47,8 +54,8 @@ pieceDic["bq"] = bqueen;
 
 let c = false;
 
-class tile{
-    constructor(x1,x2,y1,y2,oricolor,currcolor,piece) {
+class tile {
+    constructor(x1, x2, y1, y2, oricolor, currcolor, piece, pieceObj) {
         this.x1 = x1;
         this.x2 = x2;
         this.y1 = y1;
@@ -56,6 +63,8 @@ class tile{
         this.oricolor = oricolor;
         this.currcolor = currcolor;
         this.piece = piece;
+        this.pieceObj = pieceObj;
+        this.frame = false;
 
     }
 }
@@ -78,159 +87,294 @@ class ChessBoard {
                 } else {
                     col1 = "grey";
                 }
-                this.board[String.fromCharCode(97 + i).concat(`${j}`)] = new tile((i *100),(i*100) + 100, (9-j)*100,((9-j)*100)-100, col1,col1);
+                this.board[String.fromCharCode(97 + i).concat(`${j}`)] = new tile((i * 100), (i * 100) + 100, (9 - j) * 100, ((9 - j) * 100) - 100, col1, col1);
                 c = !c;
             }
             c1 = !c1;
-            if(c1 ==false){
+            if (c1 == false) {
                 c = false;
 
-            }else{
-                c=true;
+            } else {
+                c = true;
 
             }
         }
     }
 
-    
+
 }
 
-//Creating the ChessBoard
- let b1 = new ChessBoard();
+//All the piece objects - Consists of their possible moves
 
-
-
- //Detecting where mouse is on board
-
- can.addEventListener("mousemove",onMove,false);
- function onMove(event){
-     mx = event.pageX;
-     my = event.pageY;
- }
-
- can.addEventListener("mousedown", onClick, false);
- /*To keep track of which click num and tile/piece clicked
- 0: nothing
- 1: pick up
- */
-
- let clickNum = 0;
- let preTile = null;
- let prePiece = null;
-
- function onClick(event){
-    console.log("clicked");
+class Pawn{
     
+    possibleMoves(tile){
+        let moves = [];
+        if(tile.slice(1,2) == 2){
+            let m1 = tile.slice(0,1);
+            //console.log(parseInt(tile.slice(1,2))+1).toString(10);
+            m1 = m1 + (parseInt(tile.slice(1,2))+1).toString(10);
+            let m2 = tile.slice(0,1);
+            m2 = m2 + (parseInt(tile.slice(1,2))+2).toString(10);
+            moves.push(m1);
+            moves.push(m2);
+        }else{
+            let m1 = tile.slice(0,1);
+            //console.log(parseInt(tile.slice(1,2))+1).toString(10);
+            m1 = m1 + (parseInt(tile.slice(1,2))+1).toString(10);
+            moves.push(m1);
+        }
+        console.log(moves);
+        return moves;
+    }
+
+}
+
+class Knight{
+    possibleMoves(tile){
+
+
+
+    }
+
+}
+
+class Rook{
+    possibleMoves(tile){
+
+
+    }
+
+}
+
+class Bishop{
+    possibleMoves(tile){
+
+
+    }
+
+}
+
+class King{
+    possibleMoves(tile){
+
+
+    }
+
+}
+
+class Queen{
+    possibleMoves(tile){
+
+
+    }
+
+}
+//Creating the ChessBoard
+let b1 = new ChessBoard();
+
+
+
+//Detecting where mouse is on board
+
+can.addEventListener("mousemove", onMove, false);
+function onMove(event) {
+    mx = event.pageX;
+    my = event.pageY;
+}
+
+can.addEventListener("mousedown", onClick, false);
+/*To keep track of which click num and tile/piece clicked
+0: nothing
+1: pick up
+*/
+
+let clickNum = 0;
+let preTile = null;
+let prePiece = null;
+
+function onClick(event) {
+    console.log("clicked");
+
     mx = event.pageX;
     my = event.pageY;
     let tile = null;
-    for(let key in b1.board){
-        if(mx > b1.board[key].x1 && mx < b1.board[key].x2 && my < b1.board[key].y1 && my > b1.board[key].y2){
+    for (let key in b1.board) {
+        if (mx > b1.board[key].x1 && mx < b1.board[key].x2 && my < b1.board[key].y1 && my > b1.board[key].y2) {
             tile = key;
         }
     }
-    if(clickNum == 0){
-        console.log(tile);
-        if(tile.piece == null){}
-        clickNum = 1;
-        preTile = tile;
-        prePiece = b1.board[tile].piece;
-        b1.board[preTile].currcolor = "green";
-    }else if(clickNum == 1){
+    if (clickNum == 0) {
+        console.log(tile, tile.piece);
+        if (b1.board[tile].piece == null) {
+
+        } else {
+            if (b1.board[tile].piece.slice(0, 1) === "w") {
+                console.log("hi");
+                displayPossibleMoves(b1.board[tile].piece, tile);
+                clickNum = 1;
+                preTile = tile;
+                prePiece = b1.board[tile].piece;
+                b1.board[preTile].currcolor = "green";
+            }
+        }
+        //Time to put rules and stuff 
+    } else if (clickNum == 1) {
+
+        //Check if move is valid -  to do,
+        let moves = [] ;
+        moves = returnPossibleMoves(b1.board[preTile].piece, preTile);
+
+
         ctx.fillStyle = b1.board[preTile].color;
         ctx.fillRect(b1.board[preTile].x1, b1.board[preTile].y2, 100, 100);
         b1.board[preTile].piece = null;
+        b1.board[preTile].pieceObj = null;
         console.log(tile, prePiece);
         placePiece(tile, prePiece);
+        console.log(tile, b1.board[tile].piece, b1.board[tile].pieceObj);
         b1.board[preTile].currcolor = b1.board[preTile].oricolor;
         clickNum = 0;
         preTile = null;
         prePiece = null;
+        movecount++;
+        console.log("move count: " + movecount);
+
+        for(let i =0; i < moves.length; i++){
+            b1.board[moves[i]].frame = false;
+        }
+
     }
 
 }
 
- 
 
- function placePiece(tile, piece){
-     b1.board[tile].piece = piece;
- }
 
- function drawPiece(tile, piece){
+function placePiece(tile, piece) {
+    b1.board[tile].piece = piece;
+    if(piece.slice(1,2) == "p"){
+        b1.board[tile].pieceObj = new Pawn();
+    }else if(piece.slice(1,2) == "r"){
+        b1.board[tile].pieceObj = new Rook();
+    }else if(piece.slice(1,2) == "n"){
+        b1.board[tile].pieceObj = new Knight();
+    }else if(piece.slice(1,2) == "b"){
+        b1.board[tile].pieceObj = new Bishop();
+    }else if(piece.slice(1,2) == "k"){
+        b1.board[tile].pieceObj = new King();
+    }else if(piece.slice(1,2) == "q"){
+        b1.board[tile].pieceObj = new Queen();
+    }
+}
+
+function drawPiece(tile, piece) {
     ctx.drawImage(pieceDic[piece], b1.board[tile].x1, b1.board[tile].y2, 100, 100);
- }
+}
 
-  //White pawns
-  for(let i = 1; i <= 8; i++){
-    b1.board[String.fromCharCode(97 + i -1).concat(`${2}`)].piece = "wp";
- }
- //Black pawns
- for(let i = 1; i <= 8; i++){
-     b1.board[String.fromCharCode(97 + i -1).concat(`${7}`)].piece = "bp";
-  }
+function displayPossibleMoves(piece, tile){
+    
+    
+    //moves consists of tiles, the places the piece can go to
+    let moves = [];
 
-  //White Rooks
-  placePiece("a1", "wr");
-  placePiece("h1", "wr");
-
-  //White Knights
-  placePiece("b1", "wn");
-  placePiece("g1", "wn");
-
-  //White Bishops
-  placePiece("c1", "wb");
-  placePiece("f1", "wb");
-
-  //White King
-  placePiece("d1", "wk");
-
-  //White Queen
-  placePiece("e1", "wq");
+    console.log(tile, b1.board[tile].pieceObj);
 
 
+    //Find possible moves
+    moves = [...b1.board[tile].pieceObj.possibleMoves(tile)];
 
-  //BlackRooks
-  placePiece("a8", "br");
-  placePiece("h8", "br");
-
-  //Black Knights
-  placePiece("b8", "bn");
-  placePiece("g8", "bn");
-
-  //Black Bishops
-  placePiece("c8", "bb");
-  placePiece("f8", "bb");
-
-  //Black King
-  placePiece("d8", "bk");
+    console.log(moves);
 
 
-  //Black Queen
-  placePiece("e8", "bq");
+    //Display on the board
+    for(let i =0; i < moves.length; i++){
+        b1.board[moves[i]].frame = true;
+    }
+    
+}
 
- function draw(){
-    for(let key in b1.board){
+function returnPossibleMoves(piece, tile){
+    let moves = [];
+    moves = (b1.board[tile].pieceObj.possibleMoves(tile));
+    return moves;
+}
+
+//White pawns
+for (let i = 1; i <= 8; i++) {
+    placePiece(String.fromCharCode(97 + i - 1).concat(`${2}`), "wp");
+}
+//Black pawns
+for (let i = 1; i <= 8; i++) {
+    placePiece(String.fromCharCode(97 + i - 1).concat(`${7}`), "bp");
+}
+
+//Starting positions
+
+//White Rooks
+placePiece("a1", "wr");
+placePiece("h1", "wr");
+
+//White Knights
+placePiece("b1", "wn");
+placePiece("g1", "wn");
+
+//White Bishops
+placePiece("c1", "wb");
+placePiece("f1", "wb");
+
+//White King
+placePiece("d1", "wk");
+
+//White Queen
+placePiece("e1", "wq");
+
+
+
+//BlackRooks
+placePiece("a8", "br");
+placePiece("h8", "br");
+
+//Black Knights
+placePiece("b8", "bn");
+placePiece("g8", "bn");
+
+//Black Bishops
+placePiece("c8", "bb");
+placePiece("f8", "bb");
+
+//Black King
+placePiece("d8", "bk");
+
+
+//Black Queen
+placePiece("e8", "bq");
+
+function draw() {
+    for (let key in b1.board) {
         ctx.fillStyle = b1.board[key].currcolor;
         ctx.fillRect(b1.board[key].x1, b1.board[key].y2, 100, 100);
-        if(b1.board[key].piece){
+        if (b1.board[key].piece) {
             drawPiece(key, b1.board[key].piece);
         }
+        if (b1.board[key].frame){
+            ctx.drawImage(frame, b1.board[key].x1, b1.board[key].y2, 100, 100);
+        }
     }
- }
+}
 
- let gameloop = function(){
+let gameloop = function () {
     window.requestAnimationFrame(gameloop);
     draw();
-  }
-  
-  gameloop();
+}
+
+gameloop();
 
 
 
 
- 
- 
 
- 
- 
- 
+
+
+
+
+
