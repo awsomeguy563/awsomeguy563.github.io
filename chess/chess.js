@@ -1,3 +1,456 @@
+import * as AI from "./chess AI.js";
+
+//Black moves:
+class BlackPawn {
+    possibleMoves(tile) {
+        let moves = [];
+        let ld = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+        let rd = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+        let d = (String.fromCharCode(tile.charCodeAt(0))) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+        let dd = (String.fromCharCode(tile.charCodeAt(0))) + (parseInt(tile.slice(1, 2)) - 2).toString(10);
+        if (tile.slice(1, 2) == 7 && parseInt(tile.slice(1, 2)) > 1 && b1.board[dd].piece == null) {
+            let m1 = tile.slice(0, 1);
+            m1 = m1 + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+            let m2 = tile.slice(0, 1);
+            m2 = m2 + (parseInt(tile.slice(1, 2)) - 2).toString(10);
+            moves.push(m1);
+            moves.push(m2);
+        }
+        if (parseInt(tile.slice(1, 2)) > 1 && b1.board[d].piece == null) {
+            let m1 = tile.slice(0, 1);
+            m1 = m1 + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+            moves.push(m1);
+        }
+        if (tile.charCodeAt(0) > 97 && parseInt(tile.slice(1, 2)) > 0 && b1.board[ld].piece != null && b1.board[ld].piece.slice(0, 1) == "w") {
+            moves.push(ld);
+        }
+        if (tile.charCodeAt(0) < 104 && parseInt(tile.slice(1, 2)) > 0 && b1.board[rd].piece != null && b1.board[rd].piece.slice(0, 1) == "w") {
+            moves.push(rd);
+        }
+        //Add the special move of queening later - to do
+        //console.log(moves);
+        return moves;
+    }
+}
+
+export class BlackKnight {
+    possibleMoves(tile) {
+        let moves = [];
+        //generating temporary moves
+        let tempmoves = [];
+        //upr1
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) + 2).toString(10));
+        //upr2
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) + 2)) + (parseInt(tile.slice(1, 2)) + 1).toString(10));
+        //upl1
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) + 2).toString(10));
+        //upl2
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) - 2)) + (parseInt(tile.slice(1, 2)) + 1).toString(10));
+        //dor1
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) - 2).toString(10));
+        //dor2
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) + 2)) + (parseInt(tile.slice(1, 2)) - 1).toString(10));
+        //dol1
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) - 2).toString(10));
+        //dol2
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) - 2)) + (parseInt(tile.slice(1, 2)) - 1).toString(10));
+
+        //filtering moves
+        for (let i = 0; i < tempmoves.length; i++) {
+            if ((tempmoves[i].charCodeAt(0) > 96) && (tempmoves[i].charCodeAt(0) < 105) && (parseInt(tempmoves[i].slice(1, 2)) > 0) && (parseInt(tempmoves[i].slice(1, 3)) < 9)) {
+                if (b1.board[tempmoves[i]].piece == null) {
+                    moves.push(tempmoves[i]);
+                } else {
+                    if (b1.board[tempmoves[i]].piece.slice(0, 1) != "b") {
+                        moves.push(tempmoves[i]);
+                    }
+                }
+            }
+        }
+        return moves;
+    }
+}
+
+class BlackRook {
+    possibleMoves(tile) {
+        let moves = [];
+        //checking up
+        if (parseInt(tile.slice(1, 2)) < 8) {
+            let flagpiece = false;
+            let cp = tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) < 9) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = cp.slice(0, 1) + (parseInt(cp.slice(1, 2)) + 1).toString(10);
+                }
+            }
+        }
+        //Checking up done
+
+        //checking down
+        if (parseInt(tile.slice(1, 2)) > 1) {
+            let flagpiece = false;
+            let cp = tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) > 0) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = cp.slice(0, 1) + (parseInt(cp.slice(1, 2)) - 1).toString(10);
+                }
+            }
+        }
+        //Checking down done
+
+        //checking right
+        if (tile.charCodeAt(0) < 104) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + tile.slice(1, 2);
+            while (!flagpiece && cp.slice(0, 1).charCodeAt(0) < 105) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) + 1)) + cp.slice(1, 2);
+                }
+            }
+        }
+        //Checking right done
+
+        //checking left
+        if (tile.charCodeAt(0) > 97) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + tile.slice(1, 2);
+            while (!flagpiece && cp.slice(0, 1).charCodeAt(0) > 96) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) - 1)) + cp.slice(1, 2);
+                }
+            }
+        }
+        //Checking left done
+        return moves;
+    }
+}
+
+class BlackBishop {
+    possibleMoves(tile) {
+        let moves = [];
+
+        //checking up right
+        if (parseInt(tile.slice(1, 2)) < 8 && tile.charCodeAt(0) < 104) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) < 9 && cp.slice(0, 1).charCodeAt(0) < 105) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) + 1)) + (parseInt(cp.slice(1, 2)) + 1).toString(10);
+                }
+            }
+        }
+        //Checking up right done
+
+        //checking up left
+        if (parseInt(tile.slice(1, 2)) < 8 && tile.charCodeAt(0) > 97) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) < 9 && cp.slice(0, 1).charCodeAt(0) > 96) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) - 1)) + (parseInt(cp.slice(1, 2)) + 1).toString(10);
+                }
+            }
+        }
+        //Checking up left done
+
+        //checking down right
+        if (parseInt(tile.slice(1, 2)) > 1 && tile.charCodeAt(0) < 104) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) > 0 && cp.slice(0, 1).charCodeAt(0) < 105) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) + 1)) + (parseInt(cp.slice(1, 2)) - 1).toString(10);
+                }
+            }
+        }
+        //Checking down right done
+
+        //checking down left
+        if (parseInt(tile.slice(1, 2)) > 1 && tile.charCodeAt(0) > 97) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) > 0 && cp.slice(0, 1).charCodeAt(0) > 96) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) - 1)) + (parseInt(cp.slice(1, 2)) - 1).toString(10);
+                }
+            }
+        }
+        //Checking down left done
+        return moves;
+    }
+}
+
+export class BlackKing {
+    possibleMoves(tile) {
+        let moves = [];
+
+        //generating temporary moves
+        let tempmoves = [];
+        //up
+        tempmoves.push(tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) + 1).toString(10));
+        //up right
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10));
+        //up left
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10));
+        //down
+        tempmoves.push(tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) - 1).toString(10));
+        //down right
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10));
+        //down left
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10));
+        //right
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) + 1)) + tile.slice(1, 2));
+        //left
+        tempmoves.push((String.fromCharCode(tile.charCodeAt(0) - 1)) + tile.slice(1, 2));
+
+        //filtering moves
+        for (let i = 0; i < tempmoves.length; i++) {
+            if (tempmoves[i].charCodeAt(0) > 96 && tempmoves[i].charCodeAt(0) < 105 && parseInt(tempmoves[i].slice(1, 2)) > 0 && parseInt(tempmoves[i].slice(1, 2)) < 9) {
+                if (b1.board[tempmoves[i]].piece == null) {
+                    moves.push(tempmoves[i]);
+                } else {
+                    if (b1.board[tempmoves[i]].piece.slice(0, 1) != "b") {
+                        moves.push(tempmoves[i]);
+                    }
+                }
+            }
+        }
+        return moves;
+    }
+}
+
+class BlackQueen {
+    possibleMoves(tile) {
+        let moves = [];
+
+        //checking up
+        if (parseInt(tile.slice(1, 2)) < 8) {
+            let flagpiece = false;
+            let cp = tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) < 9) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = cp.slice(0, 1) + (parseInt(cp.slice(1, 2)) + 1).toString(10);
+                }
+            }
+        }
+        //Checking up done
+
+        //checking down
+        if (parseInt(tile.slice(1, 2)) > 1) {
+            let flagpiece = false;
+            let cp = tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) > 0) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = cp.slice(0, 1) + (parseInt(cp.slice(1, 2)) - 1).toString(10);
+                }
+            }
+        }
+        //Checking down done
+
+        //checking right
+        if (tile.charCodeAt(0) < 104) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + tile.slice(1, 2);
+            while (!flagpiece && cp.slice(0, 1).charCodeAt(0) < 105) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) + 1)) + cp.slice(1, 2);
+                }
+            }
+        }
+        //Checking right done
+
+        //checking left
+        if (tile.charCodeAt(0) > 97) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + tile.slice(1, 2);
+            while (!flagpiece && cp.slice(0, 1).charCodeAt(0) > 96) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) - 1)) + cp.slice(1, 2);
+                }
+            }
+        }
+        //Checking left done
+
+        //checking up right
+        if (parseInt(tile.slice(1, 2)) < 8 && tile.charCodeAt(0) < 104) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) < 9 && cp.slice(0, 1).charCodeAt(0) < 105) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) + 1)) + (parseInt(cp.slice(1, 2)) + 1).toString(10);
+                }
+            }
+        }
+        //Checking up right done
+
+        //checking up left
+        if (parseInt(tile.slice(1, 2)) < 8 && tile.charCodeAt(0) > 97) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) < 9 && cp.slice(0, 1).charCodeAt(0) > 96) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) - 1)) + (parseInt(cp.slice(1, 2)) + 1).toString(10);
+                }
+            }
+        }
+        //Checking up left done
+
+        //checking down right
+        if (parseInt(tile.slice(1, 2)) > 1 && tile.charCodeAt(0) < 104) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) > 0 && cp.slice(0, 1).charCodeAt(0) < 105) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) + 1)) + (parseInt(cp.slice(1, 2)) - 1).toString(10);
+                }
+            }
+        }
+        //Checking down right done
+
+        //checking down left
+        if (parseInt(tile.slice(1, 2)) > 1 && tile.charCodeAt(0) > 97) {
+            let flagpiece = false;
+            let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
+            while (!flagpiece && parseInt(cp.slice(1, 2)) > 0 && cp.slice(0, 1).charCodeAt(0) > 96) {
+                if (b1.board[cp].piece != null) {
+                    if (b1.board[cp].piece.slice(0, 1) == "b") {
+                        flagpiece = true;
+                    } else {
+                        moves.push(cp);
+                        flagpiece = true;
+                    }
+                } else {
+                    moves.push(cp);
+                    cp = (String.fromCharCode(cp.charCodeAt(0) - 1)) + (parseInt(cp.slice(1, 2)) - 1).toString(10);
+                }
+            }
+        }
+        //Checking down left done
+
+        return moves;
+    }
+}
+
 
 //Setting up the Canvas
 let ctx = document.getElementById("can").getContext("2d");
@@ -124,7 +577,7 @@ class Pawn {
             moves.push(ru);
         }
         //Add the special move of queening later - to do
-        console.log(moves);
+        //console.log(moves);
         return moves;
     }
 }
@@ -153,9 +606,7 @@ class Knight {
 
         //filtering moves
         for (let i = 0; i < tempmoves.length; i++) {
-            console.log("Bo beep: " + tempmoves[i]);
             if ((tempmoves[i].charCodeAt(0) > 96) && (tempmoves[i].charCodeAt(0) < 105) && (parseInt(tempmoves[i].slice(1, 2)) > 0) && (parseInt(tempmoves[i].slice(1, 3)) < 9)) {
-                console.log("Bo beep: " + tempmoves[i], parseInt(tempmoves[i].slice(1, 2)));
                 if (b1.board[tempmoves[i]].piece == null) {
                     moves.push(tempmoves[i]);
                 } else {
@@ -177,7 +628,6 @@ class Rook {
             let flagpiece = false;
             let cp = tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) < 9) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -198,7 +648,6 @@ class Rook {
             let flagpiece = false;
             let cp = tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) > 0) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -219,7 +668,6 @@ class Rook {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + tile.slice(1, 2);
             while (!flagpiece && cp.slice(0, 1).charCodeAt(0) < 105) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -240,7 +688,6 @@ class Rook {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + tile.slice(1, 2);
             while (!flagpiece && cp.slice(0, 1).charCodeAt(0) > 96) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -268,7 +715,6 @@ class Bishop {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) < 9 && cp.slice(0, 1).charCodeAt(0) < 105) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -289,7 +735,6 @@ class Bishop {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) < 9 && cp.slice(0, 1).charCodeAt(0) > 96) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -310,7 +755,6 @@ class Bishop {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) > 0 && cp.slice(0, 1).charCodeAt(0) < 105) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -331,7 +775,6 @@ class Bishop {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) > 0 && cp.slice(0, 1).charCodeAt(0) > 96) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -398,7 +841,6 @@ class Queen {
             let flagpiece = false;
             let cp = tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) < 9) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -419,7 +861,6 @@ class Queen {
             let flagpiece = false;
             let cp = tile.slice(0, 1) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) > 0) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -440,7 +881,6 @@ class Queen {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + tile.slice(1, 2);
             while (!flagpiece && cp.slice(0, 1).charCodeAt(0) < 105) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -461,7 +901,6 @@ class Queen {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + tile.slice(1, 2);
             while (!flagpiece && cp.slice(0, 1).charCodeAt(0) > 96) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -482,7 +921,6 @@ class Queen {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) < 9 && cp.slice(0, 1).charCodeAt(0) < 105) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -503,7 +941,6 @@ class Queen {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) < 9 && cp.slice(0, 1).charCodeAt(0) > 96) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -524,7 +961,6 @@ class Queen {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) > 0 && cp.slice(0, 1).charCodeAt(0) < 105) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -545,7 +981,6 @@ class Queen {
             let flagpiece = false;
             let cp = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
             while (!flagpiece && parseInt(cp.slice(1, 2)) > 0 && cp.slice(0, 1).charCodeAt(0) > 96) {
-                console.log(cp, b1.board[cp].piece);
                 if (b1.board[cp].piece != null) {
                     if (b1.board[cp].piece.slice(0, 1) == "w") {
                         flagpiece = true;
@@ -566,42 +1001,44 @@ class Queen {
 }
 
 //Event listeners for the canvas
-
-can.addEventListener("mousemove", onMove, false);
-function onMove(event) {
-    mx = event.pageX;
-    my = event.pageY;
-}
-
 //Detecting where mouse is on board
-can.addEventListener("mousedown", onClick, false);
+function onMove(event) {
+    let mx = event.clientX;
+    let my = event.clientY;
+}
+can.addEventListener("mousemove", onMove, false);
+
+
+
 /*To keep track of which click num and tile/piece clicked
 0: nothing
 1: pick up
 */
 
-let clickNum = 0;
+
 let preTile = null;
 let prePiece = null;
-
+let clickNum = 0;
 function onClick(event) {
-    console.log("clicked");
-
-    mx = event.pageX;
-    my = event.pageY;
+    let mx = event.clientX;
+    let my = event.clientY;
     let tile = null;
+
     for (let key in b1.board) {
         if (mx > b1.board[key].x1 && mx < b1.board[key].x2 && my < b1.board[key].y1 && my > b1.board[key].y2) {
             tile = key;
         }
     }
     if (clickNum == 0) {
-        console.log(tile, tile.piece);
         if (b1.board[tile].piece == null) {
-
         } else {
-            if (b1.board[tile].piece.slice(0, 1) === "w") {
-                console.log("hi");
+            if (b1.board[tile].piece.slice(0, 1) === "w" && movecount % 2 == 0) {
+                displayPossibleMoves(b1.board[tile].piece, tile);
+                clickNum = 1;
+                preTile = tile;
+                prePiece = b1.board[tile].piece;
+                b1.board[preTile].currcolor = "green";
+            } else if(b1.board[tile].piece.slice(0, 1) === "b" && movecount % 2 != 0){
                 displayPossibleMoves(b1.board[tile].piece, tile);
                 clickNum = 1;
                 preTile = tile;
@@ -621,23 +1058,19 @@ function onClick(event) {
             ctx.fillRect(b1.board[preTile].x1, b1.board[preTile].y2, 100, 100);
             b1.board[preTile].piece = null;
             b1.board[preTile].pieceObj = null;
-            console.log(tile, prePiece);
             placePiece(tile, prePiece);
-            console.log(tile, b1.board[tile].piece, b1.board[tile].pieceObj);
             b1.board[preTile].currcolor = b1.board[preTile].oricolor;
             clickNum = 0;
             preTile = null;
             prePiece = null;
             movecount++;
             console.log("move count: " + movecount);
-
-
         } else {
             b1.board[preTile].currcolor = b1.board[preTile].oricolor;
             clickNum = 0;
             preTile = null;
             prePiece = null;
-            movecount++;
+        
         }
         for (let i = 0; i < moves.length; i++) {
             b1.board[moves[i]].frame = false;
@@ -646,23 +1079,39 @@ function onClick(event) {
     }
 
 }
-
+can.addEventListener("mousedown", onClick, false);
 
 //Commonly used functions
 function placePiece(tile, piece) {
     b1.board[tile].piece = piece;
-    if (piece.slice(1, 2) == "p") {
-        b1.board[tile].pieceObj = new Pawn();
-    } else if (piece.slice(1, 2) == "r") {
-        b1.board[tile].pieceObj = new Rook();
-    } else if (piece.slice(1, 2) == "n") {
-        b1.board[tile].pieceObj = new Knight();
-    } else if (piece.slice(1, 2) == "b") {
-        b1.board[tile].pieceObj = new Bishop();
-    } else if (piece.slice(1, 2) == "k") {
-        b1.board[tile].pieceObj = new King();
-    } else if (piece.slice(1, 2) == "q") {
-        b1.board[tile].pieceObj = new Queen();
+    if (piece.slice(0, 1) == "w") {
+        if (piece.slice(1, 2) == "p") {
+            b1.board[tile].pieceObj = new Pawn();
+        } else if (piece.slice(1, 2) == "r") {
+            b1.board[tile].pieceObj = new Rook();
+        } else if (piece.slice(1, 2) == "n") {
+            b1.board[tile].pieceObj = new Knight();
+        } else if (piece.slice(1, 2) == "b") {
+            b1.board[tile].pieceObj = new Bishop();
+        } else if (piece.slice(1, 2) == "k") {
+            b1.board[tile].pieceObj = new King();
+        } else if (piece.slice(1, 2) == "q") {
+            b1.board[tile].pieceObj = new Queen();
+        }
+    }else{
+        if (piece.slice(1, 2) == "p") {
+            b1.board[tile].pieceObj = new BlackPawn();
+        } else if (piece.slice(1, 2) == "r") {
+            b1.board[tile].pieceObj = new BlackRook();
+        } else if (piece.slice(1, 2) == "n") {
+            b1.board[tile].pieceObj = new BlackKnight();
+        } else if (piece.slice(1, 2) == "b") {
+            b1.board[tile].pieceObj = new BlackBishop();
+        } else if (piece.slice(1, 2) == "k") {
+            b1.board[tile].pieceObj = new BlackKing();
+        } else if (piece.slice(1, 2) == "q") {
+            b1.board[tile].pieceObj = new BlackQueen();
+        }
     }
 }
 
@@ -671,24 +1120,16 @@ function drawPiece(tile, piece) {
 }
 
 function displayPossibleMoves(piece, tile) {
-
     //moves consists of tiles, the places the piece can go to
     let moves = [];
 
-    console.log(tile, b1.board[tile].pieceObj);
-
-
     //Find possible moves
     moves = [...b1.board[tile].pieceObj.possibleMoves(tile)];
-
-    console.log(moves);
-
 
     //Display on the board
     for (let i = 0; i < moves.length; i++) {
         b1.board[moves[i]].frame = true;
     }
-
 }
 
 function returnPossibleMoves(piece, tile) {
@@ -754,7 +1195,11 @@ placePiece("e8", "bq");
 
 
 //Game loop, can also create an update function if wanted
-function update(){
+function update() {
+    if (movecount % 2 == 0) {
+        //Move black pieces using an AI
+
+    }
 
 }
 
@@ -779,6 +1224,12 @@ let gameloop = function () {
 
 gameloop();
 
+/*To do list:
+- Make turn play, and create AI for the black pieces
+- Create WIN, LOSE and TIE scenarios
+- Create special moves - En Passant, Queening, Castling
+- Cool interface on the other side of the page
+*/
 
 
 
