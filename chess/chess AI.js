@@ -1,10 +1,6 @@
-import * as ch from "./chess AI.js";
-
-
-
 //Piece Objects for black Pieces - AI
 
-export class BlackPawn {
+/*export class BlackPawn {
     possibleMoves(tile) {
         let moves = [];
         let ld = (String.fromCharCode(tile.charCodeAt(0) - 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
@@ -462,6 +458,49 @@ export class BlackQueen {
 
         return moves;
     }
+}
+*/
+
+export function calcBestMove(board) {
+
+
+    let allMoves = [];
+    let allMoves2 = [];
+    //get list of all possible moves
+    let alltiles = [];
+    let ct;
+    for (let i = 97; i < 105; i++) {
+        for (let j = 1; j < 9; j++) {
+            ct = String.fromCharCode(i) + (j.toString(10));
+    
+            if (board.board[ct].piece != null) {
+                if (board.board[ct].piece.slice(0, 1) == "b") {
+                    alltiles.push(ct);
+                }
+            }
+        }
+    }
+    for(let i =0; i< alltiles.length; i++){
+        let mov1 = [alltiles[i], board.board[alltiles[i]].pieceObj.possibleMoves(alltiles[i])];
+        allMoves.push(mov1);
+    } 
+
+    for(let i =0; i< allMoves.length; i++){
+        if(allMoves[i][1].length != 0){
+            allMoves2.push([allMoves[i][0], allMoves[i][1]]);
+        }
+    }
+
+    console.log(allMoves2);
+
+    //Choose a random move
+    let ran1 = Math.floor(Math.random() * allMoves2.length) + 0
+    let ran2 = Math.floor(Math.random() * allMoves2[ran1][1].length) + 0
+
+    console.log(ran1, ran2);
+
+    //return it
+    return [allMoves2[ran1][0], allMoves2[ran1][1][ran2]];
 }
 
 export * from "./chess AI.js";

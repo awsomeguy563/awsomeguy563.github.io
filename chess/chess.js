@@ -1,4 +1,12 @@
 import * as AI from "./chess AI.js";
+let disp = document.getElementById("d1");
+
+//Global Vars
+
+let WinCheck = false;
+let BinCheck = false;
+
+
 
 //Black moves:
 class BlackPawn {
@@ -8,27 +16,25 @@ class BlackPawn {
         let rd = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
         let d = (String.fromCharCode(tile.charCodeAt(0))) + (parseInt(tile.slice(1, 2)) - 1).toString(10);
         let dd = (String.fromCharCode(tile.charCodeAt(0))) + (parseInt(tile.slice(1, 2)) - 2).toString(10);
-        if (tile.slice(1, 2) == 7 && parseInt(tile.slice(1, 2)) > 1 && b1.board[dd].piece == null) {
-            let m1 = tile.slice(0, 1);
-            m1 = m1 + (parseInt(tile.slice(1, 2)) - 1).toString(10);
-            let m2 = tile.slice(0, 1);
-            m2 = m2 + (parseInt(tile.slice(1, 2)) - 2).toString(10);
-            moves.push(m1);
-            moves.push(m2);
+        if (tile.slice(1, 2) == 7 && b1.board[dd].piece == null && b1.board[d].piece == null) {
+            moves.push(d);
+            moves.push(dd);
         }
-        if (parseInt(tile.slice(1, 2)) > 1 && b1.board[d].piece == null) {
-            let m1 = tile.slice(0, 1);
-            m1 = m1 + (parseInt(tile.slice(1, 2)) - 1).toString(10);
-            moves.push(m1);
+        if (tile.slice(1, 2) == 7 && b1.board[d].piece == null && b1.board[dd].piece != null) {
+            moves.push(d);
         }
-        if (tile.charCodeAt(0) > 97 && parseInt(tile.slice(1, 2)) > 0 && b1.board[ld].piece != null && b1.board[ld].piece.slice(0, 1) == "w") {
+        if (parseInt(tile.slice(1, 2)) > 1 && tile.slice(1, 2) != 7 && b1.board[d].piece == null) {
+            moves.push(d);
+        }
+        if (tile.charCodeAt(0) > 97 && parseInt(tile.slice(1, 2)) > 1 && b1.board[ld].piece != null && b1.board[ld].piece.slice(0, 1) == "w") {
             moves.push(ld);
         }
-        if (tile.charCodeAt(0) < 104 && parseInt(tile.slice(1, 2)) > 0 && b1.board[rd].piece != null && b1.board[rd].piece.slice(0, 1) == "w") {
+        if (tile.charCodeAt(0) < 104 && parseInt(tile.slice(1, 2)) > 1 && b1.board[rd].piece != null && b1.board[rd].piece.slice(0, 1) == "w") {
             moves.push(rd);
         }
-        //Add the special move of queening later - to do
-        //console.log(moves);
+        /*for(let i=0; i< moves.length; i++){
+            console.log(moves[i]);
+        }*/
         return moves;
     }
 }
@@ -267,11 +273,38 @@ export class BlackKing {
         //left
         tempmoves.push((String.fromCharCode(tile.charCodeAt(0) - 1)) + tile.slice(1, 2));
 
+        let wmoves = FindAllPossibleWhiteMoves();
+
+        //Filter and add pawn moves using bmoves - Also do the same with the black king
+
+        for (let i = 0; i < wmoves.length; i++) {
+            if (b1.board[wmoves[i][0]].piece.slice(1, 2) == "p") {
+                if (wmoves[i][1] != null) { }
+                for (let j = 0; j <= wmoves[i][1].length; j++) {
+                    if (wmoves.length != 0) {
+                        wmoves[i][1].pop();
+                    }
+                }
+                wmoves[i][1].push((String.fromCharCode(wmoves[i][0].charCodeAt(0) - 1)) + (parseInt(wmoves[i][0].slice(1, 2)) - 1).toString(10));
+                wmoves[i][1].push((String.fromCharCode(wmoves[i][0].charCodeAt(0) + 1)) + (parseInt(wmoves[i][0].slice(1, 2)) - 1).toString(10));
+            }
+        }
+
         //filtering moves
         for (let i = 0; i < tempmoves.length; i++) {
             if (tempmoves[i].charCodeAt(0) > 96 && tempmoves[i].charCodeAt(0) < 105 && parseInt(tempmoves[i].slice(1, 2)) > 0 && parseInt(tempmoves[i].slice(1, 2)) < 9) {
                 if (b1.board[tempmoves[i]].piece == null) {
-                    moves.push(tempmoves[i]);
+                    let flag = false;
+                    for (let j = 0; j < wmoves.length; j++) {
+                        for (let k = 0; k < wmoves[j][1].length; k++) {
+                            if (tempmoves[i] == wmoves[j][1][k]) {
+                                flag = true;
+                            }
+                        }
+                    }
+                    if (!flag) {
+                        moves.push(tempmoves[i]);
+                    }
                 } else {
                     if (b1.board[tempmoves[i]].piece.slice(0, 1) != "b") {
                         moves.push(tempmoves[i]);
@@ -549,6 +582,108 @@ class ChessBoard {
     }
 }
 
+function FindAllPossibleWhiteMoves() {
+    let allMoves = [];
+    //get list of all possible moves
+    let alltiles = [];
+    let ct;
+    for (let i = 97; i < 105; i++) {
+        for (let j = 1; j < 9; j++) {
+            ct = String.fromCharCode(i) + (j.toString(10));
+
+            if (b1.board[ct].piece != null) {
+                if (b1.board[ct].piece.slice(0, 1) == "w") {
+                    alltiles.push(ct);
+                }
+            }
+        }
+    }
+
+
+    //alltiles is right
+    for (let i = 0; i < alltiles.length; i++) {
+        if (b1.board[alltiles[i]].piece == "wk") {
+            //Find all white king possible moves and add manually
+            let tk = alltiles[i];
+            let tempkmoves = [];
+            let tempfkmoves = [];
+            // u, d, l ,r
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0))) + (parseInt(tk.slice(1, 2)) + 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0))) + (parseInt(tk.slice(1, 2)) - 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) - 1)) + (parseInt(tk.slice(1, 2))).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) + 1)) + (parseInt(tk.slice(1, 2))).toString(10));
+            // ul, ur, dl, dr
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) - 1)) + (parseInt(tk.slice(1, 2)) + 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) + 1)) + (parseInt(tk.slice(1, 2)) + 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) - 1)) + (parseInt(tk.slice(1, 2)) - 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) + 1)) + (parseInt(tk.slice(1, 2)) - 1).toString(10));
+            //now filter those moves
+            for (let i = 0; i < tempkmoves.length; i++) {
+                if (tempkmoves[i].charCodeAt(0) > 96 && tempkmoves[i].charCodeAt(0) < 105 && parseInt(tempkmoves[i].slice(1, 2)) > 0 && parseInt(tempkmoves[i].slice(1, 2)) < 9) {
+                    tempfkmoves.push(tempkmoves[i]);
+                }
+            }
+            let mov1 = [alltiles[i], tempfkmoves];
+            allMoves.push(mov1);
+        } else {
+            let mov1 = [alltiles[i], b1.board[alltiles[i]].pieceObj.possibleMoves(alltiles[i])];
+            allMoves.push(mov1);
+        }
+    }
+
+    return allMoves;
+
+}
+
+
+function FindAllPossibleBlackMoves() {
+    let allMoves = [];
+    //get list of all possible moves
+    let alltiles = [];
+    let ct;
+    for (let i = 97; i < 105; i++) {
+        for (let j = 1; j < 9; j++) {
+            ct = String.fromCharCode(i) + (j.toString(10));
+            if (b1.board[ct].piece != null) {
+                if (b1.board[ct].piece.slice(0, 1) == "b") {
+                    alltiles.push(ct);
+                }
+            }
+        }
+    }
+
+    for (let i = 0; i < alltiles.length; i++) {
+        if (b1.board[alltiles[i]].piece == "bk") {
+            //Find all white king possible moves and add manually
+            let tk = alltiles[i];
+            let tempkmoves = [];
+            let tempfkmoves = [];
+            // u, d, l ,r
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0))) + (parseInt(tk.slice(1, 2)) + 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0))) + (parseInt(tk.slice(1, 2)) - 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) - 1)) + (parseInt(tk.slice(1, 2))).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) + 1)) + (parseInt(tk.slice(1, 2))).toString(10));
+            // ul, ur, dl, dr
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) - 1)) + (parseInt(tk.slice(1, 2)) + 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) + 1)) + (parseInt(tk.slice(1, 2)) + 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) - 1)) + (parseInt(tk.slice(1, 2)) - 1).toString(10));
+            tempkmoves.push((String.fromCharCode(tk.charCodeAt(0) + 1)) + (parseInt(tk.slice(1, 2)) - 1).toString(10));
+            //now filter those moves
+            for (let i = 0; i < tempkmoves.length; i++) {
+                if (tempkmoves[i].charCodeAt(0) > 96 && tempkmoves[i].charCodeAt(0) < 105 && parseInt(tempkmoves[i].slice(1, 2)) > 0 && parseInt(tempkmoves[i].slice(1, 2)) < 9) {
+                    tempfkmoves.push(tempkmoves[i]);
+                }
+            }
+            let mov1 = [alltiles[i], tempfkmoves];
+            allMoves.push(mov1);
+        } else {
+            let mov1 = [alltiles[i], b1.board[alltiles[i]].pieceObj.possibleMoves(alltiles[i])];
+            allMoves.push(mov1);
+        }
+    }
+
+    return allMoves;
+}
 //All the piece objects - Consists of their possible moves
 class Pawn {
     possibleMoves(tile) {
@@ -557,27 +692,25 @@ class Pawn {
         let ru = (String.fromCharCode(tile.charCodeAt(0) + 1)) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
         let u = (String.fromCharCode(tile.charCodeAt(0))) + (parseInt(tile.slice(1, 2)) + 1).toString(10);
         let uu = (String.fromCharCode(tile.charCodeAt(0))) + (parseInt(tile.slice(1, 2)) + 2).toString(10);
-        if (tile.slice(1, 2) == 2 && parseInt(tile.slice(1, 2)) < 8 && b1.board[uu].piece == null) {
-            let m1 = tile.slice(0, 1);
-            m1 = m1 + (parseInt(tile.slice(1, 2)) + 1).toString(10);
-            let m2 = tile.slice(0, 1);
-            m2 = m2 + (parseInt(tile.slice(1, 2)) + 2).toString(10);
-            moves.push(m1);
-            moves.push(m2);
+        if (tile.slice(1, 2) < 8) {
+            if (tile.slice(1, 2) == 2 && b1.board[uu].piece == null && b1.board[u].piece == null) {
+                moves.push(u);
+                moves.push(uu);
+            }
+            if (parseInt(tile.slice(1, 2)) == 2 && b1.board[u].piece == null && b1.board[uu].piece != null) {
+                moves.push(u);
+            }
+            if (parseInt(tile.slice(1, 2)) != 2 && b1.board[u].piece == null && parseInt(tile.slice(1, 2)) < 8) {
+                moves.push(u);
+            }
+            if (tile.charCodeAt(0) > 97 && parseInt(tile.slice(1, 2)) < 8 && b1.board[lu].piece != null && b1.board[lu].piece.slice(0, 1) == "b") {
+                moves.push(lu);
+            }
+            if (tile.charCodeAt(0) < 104 && parseInt(tile.slice(1, 2)) < 8 && b1.board[ru].piece != null && b1.board[ru].piece.slice(0, 1) == "b") {
+                moves.push(ru);
+            }
         }
-        if (parseInt(tile.slice(1, 2)) < 8 && b1.board[u].piece == null) {
-            let m1 = tile.slice(0, 1);
-            m1 = m1 + (parseInt(tile.slice(1, 2)) + 1).toString(10);
-            moves.push(m1);
-        }
-        if (tile.charCodeAt(0) > 97 && parseInt(tile.slice(1, 2)) < 8 && b1.board[lu].piece != null && b1.board[lu].piece.slice(0, 1) == "b") {
-            moves.push(lu);
-        }
-        if (tile.charCodeAt(0) < 104 && parseInt(tile.slice(1, 2)) < 8 && b1.board[ru].piece != null && b1.board[ru].piece.slice(0, 1) == "b") {
-            moves.push(ru);
-        }
-        //Add the special move of queening later - to do
-        //console.log(moves);
+
         return moves;
     }
 }
@@ -816,21 +949,53 @@ class King {
         //left
         tempmoves.push((String.fromCharCode(tile.charCodeAt(0) - 1)) + tile.slice(1, 2));
 
+        let bmoves = FindAllPossibleBlackMoves();
+
+        //Filter and add pawn moves using bmoves - Also do the same with the black king
+
+        for (let i = 0; i < bmoves.length; i++) {
+            if (b1.board[bmoves[i][0]].piece.slice(1, 2) == "p") {
+                for (let j = 0; j <= bmoves[i][1].length; j++) {
+                    if (bmoves.length != 0) {
+                        bmoves[i][1].pop();
+                    }
+                }
+                bmoves[i][1].push((String.fromCharCode(bmoves[i][0].charCodeAt(0) - 1)) + (parseInt(bmoves[i][0].slice(1, 2)) - 1).toString(10));
+                bmoves[i][1].push((String.fromCharCode(bmoves[i][0].charCodeAt(0) + 1)) + (parseInt(bmoves[i][0].slice(1, 2)) - 1).toString(10));
+            }
+        }
+        //filter finish - add to the actual filter below
+
+
         //filtering moves
         for (let i = 0; i < tempmoves.length; i++) {
             if (tempmoves[i].charCodeAt(0) > 96 && tempmoves[i].charCodeAt(0) < 105 && parseInt(tempmoves[i].slice(1, 2)) > 0 && parseInt(tempmoves[i].slice(1, 2)) < 9) {
                 if (b1.board[tempmoves[i]].piece == null) {
-                    moves.push(tempmoves[i]);
-                } else {
+                    let flag = false;
+                    for (let j = 0; j < bmoves.length; j++) {
+                        for (let k = 0; k < bmoves[j][1].length; k++) {
+                            if (tempmoves[i] == bmoves[j][1][k]) {
+                                flag = true;
+                            }
+                        }
+                    }
+                    if (!flag) {
+                        moves.push(tempmoves[i]);
+                    }
+                }
+                else {
                     if (b1.board[tempmoves[i]].piece.slice(0, 1) != "w") {
+                        //Have to check if piece is proctected
                         moves.push(tempmoves[i]);
                     }
                 }
             }
         }
+
         return moves;
     }
 }
+
 
 class Queen {
     possibleMoves(tile) {
@@ -1000,6 +1165,7 @@ class Queen {
     }
 }
 
+
 //Event listeners for the canvas
 //Detecting where mouse is on board
 function onMove(event) {
@@ -1030,24 +1196,48 @@ function onClick(event) {
         }
     }
     if (clickNum == 0) {
-        if (b1.board[tile].piece == null) {
-        } else {
-            if (b1.board[tile].piece.slice(0, 1) === "w" && movecount % 2 == 0) {
-                displayPossibleMoves(b1.board[tile].piece, tile);
-                clickNum = 1;
-                preTile = tile;
-                prePiece = b1.board[tile].piece;
-                b1.board[preTile].currcolor = "green";
-            } else if(b1.board[tile].piece.slice(0, 1) === "b" && movecount % 2 != 0){
-                displayPossibleMoves(b1.board[tile].piece, tile);
-                clickNum = 1;
-                preTile = tile;
-                prePiece = b1.board[tile].piece;
-                b1.board[preTile].currcolor = "green";
+        if (WinCheck) {
+            if (b1.board[tile].piece == "wk") {
+                if (b1.board[tile].piece == null) {
+                } else {
+                    if (b1.board[tile].piece.slice(0, 1) === "w" && movecount % 2 == 0) {
+                        displayPossibleMoves(b1.board[tile].piece, tile);
+                        clickNum = 1;
+                        preTile = tile;
+                        prePiece = b1.board[tile].piece;
+                        b1.board[preTile].currcolor = "green";
+                    } else if (b1.board[tile].piece.slice(0, 1) === "b" && movecount % 2 != 0) {
+                        displayPossibleMoves(b1.board[tile].piece, tile);
+                        clickNum = 1;
+                        preTile = tile;
+                        prePiece = b1.board[tile].piece;
+                        b1.board[preTile].currcolor = "green";
+                    }
+                }
+            }
+        }
+        else {
+            if (b1.board[tile].piece == null) {
+            } else {
+                if (b1.board[tile].piece.slice(0, 1) === "w" && movecount % 2 == 0) {
+                    displayPossibleMoves(b1.board[tile].piece, tile);
+                    clickNum = 1;
+                    preTile = tile;
+                    prePiece = b1.board[tile].piece;
+                    b1.board[preTile].currcolor = "green";
+                } else if (b1.board[tile].piece.slice(0, 1) === "b" && movecount % 2 != 0) {
+                    displayPossibleMoves(b1.board[tile].piece, tile);
+                    clickNum = 1;
+                    preTile = tile;
+                    prePiece = b1.board[tile].piece;
+                    b1.board[preTile].currcolor = "green";
+                }
             }
         }
         //Time to put rules and stuff 
     } else if (clickNum == 1) {
+
+
 
         //Check if move is valid -  to do,
         let moves = [];
@@ -1070,13 +1260,15 @@ function onClick(event) {
             clickNum = 0;
             preTile = null;
             prePiece = null;
-        
+
         }
         for (let i = 0; i < moves.length; i++) {
             b1.board[moves[i]].frame = false;
         }
 
     }
+
+    return false;
 
 }
 can.addEventListener("mousedown", onClick, false);
@@ -1098,7 +1290,7 @@ function placePiece(tile, piece) {
         } else if (piece.slice(1, 2) == "q") {
             b1.board[tile].pieceObj = new Queen();
         }
-    }else{
+    } else {
         if (piece.slice(1, 2) == "p") {
             b1.board[tile].pieceObj = new BlackPawn();
         } else if (piece.slice(1, 2) == "r") {
@@ -1143,6 +1335,7 @@ function returnPossibleMoves(piece, tile) {
 //Creating the ChessBoard
 let b1 = new ChessBoard();
 
+
 //White pawns
 for (let i = 1; i <= 8; i++) {
     placePiece(String.fromCharCode(97 + i - 1).concat(`${2}`), "wp");
@@ -1167,10 +1360,10 @@ placePiece("c1", "wb");
 placePiece("f1", "wb");
 
 //White King
-placePiece("d1", "wk");
+placePiece("e1", "wk");
 
 //White Queen
-placePiece("e1", "wq");
+placePiece("d1", "wq");
 
 //BlackRooks
 placePiece("a8", "br");
@@ -1185,10 +1378,11 @@ placePiece("c8", "bb");
 placePiece("f8", "bb");
 
 //Black King
-placePiece("d8", "bk");
+placePiece("e8", "bk");
 
 //Black Queen
-placePiece("e8", "bq");
+placePiece("d8", "bq");
+
 
 
 
@@ -1196,11 +1390,89 @@ placePiece("e8", "bq");
 
 //Game loop, can also create an update function if wanted
 function update() {
-    if (movecount % 2 == 0) {
-        //Move black pieces using an AI
 
+    //find where the white and black king are located
+    let wking;
+    let bking;
+
+    let ct;
+    for (let i = 97; i < 105; i++) {
+        for (let j = 1; j < 9; j++) {
+            ct = String.fromCharCode(i) + (j.toString(10));
+            if (b1.board[ct].piece != null) {
+                if (b1.board[ct].piece == "wk") {
+                    wking = ct;
+                }
+            }
+            if (b1.board[ct].piece != null) {
+                if (b1.board[ct].piece == "bk") {
+                    bking = ct;
+                }
+            }
+
+        }
     }
 
+
+    let wmoves = FindAllPossibleWhiteMoves();
+    let bmoves = FindAllPossibleBlackMoves();
+
+    //Check for checks
+    //White king and then force move
+
+
+    for (let i = 0; i < bmoves.length; i++) {
+        for (let j = 0; j < bmoves[i][1].length; j++) {
+            if (wking == bmoves[i][1][j]) {
+                WinCheck = true;
+                console.log("check");
+                disp.innerHTML = "Check";
+            }
+        }
+    }
+
+    for (let i = 0; i < wmoves.length; i++) {
+        for (let j = 0; j < wmoves[i][1].length; j++) {
+            if (bking == wmoves[i][1][j]) {
+                BinCheck = true;
+            }
+        }
+    }
+
+
+
+    if (movecount % 2 != 0) {
+        let piecemove = AI.calcBestMove(b1);
+        //Do the best move - copy from the click ==1 function
+        let piece = piecemove[0];
+        let move = piecemove[1];
+
+        placePiece(move, b1.board[piece].piece);
+        b1.board[piece].piece = null;
+        b1.board[piece].pieceObj = null;
+        b1.board[piece].currcolor = b1.board[piece].oricolor;
+
+
+
+        movecount++;
+    }
+
+    //Checking for Queening:
+
+    for (let tile in b1.board) {
+        if (b1.board[tile].piece != null) {
+            if (b1.board[tile].piece.slice(1, 2) == "p" && (tile.slice(1, 2) == "8" || tile.slice(1, 2) == "1")) {
+                b1.board[tile].piece = b1.board[tile].piece.slice(0, 1) + "q";
+                if (b1.board[tile].piece.slice(0, 1) == "w") {
+                    b1.board[tile].pieceObj = new Queen();
+                } else {
+                    b1.board[tile].pieceObj = new BlackQueen;
+                }
+            }
+        }
+    }
+
+    //Put win,lose and draw
 }
 
 function draw() {
@@ -1229,9 +1501,48 @@ gameloop();
 - Create WIN, LOSE and TIE scenarios
 - Create special moves - En Passant, Queening, Castling
 - Cool interface on the other side of the page
+- Allow any move that gets the king out of check
 */
 
+/*Error doc
 
+FindallPossiblewhiteMoves works!
+
+Its just when I put it in the black king function it stops working and breaks?
+
+WOW FOUND ERROR
+
+Black king calls Fallposiblewmoves
+Then while doin gwhite king
+White king calls FallpossibleBlackmoves
+Which goes to black king
+And repeats
+
+Therefore infinite loop
+
+Solution:
+In both the find all moves functions
+When we get to king piece object
+We make another case
+
+
+
+New errors but have to do eventually:
+
+When king has no moves or AI has no moves there is error
+
+To Do to finish the game:
+
+More importantly to implement "piece" support, if one piece is supported by another, the king of either team cannot take it
+implement "check" feature and checkmate and stalemate blah blah blah
+
+Not errors but need to fix:
+
+For rooks bishops and Queens, either king can move in any direction behind it, as the
+pieces possible moves only goes up to the king, not beyond it, Fix this by
+placing code in the king classes for both colors
+
+*/
 
 
 
