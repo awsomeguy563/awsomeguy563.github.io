@@ -5,6 +5,8 @@ let disp = document.getElementById("d1");
 
 let WinCheck = false;
 let BinCheck = false;
+let WCheckm8 = false;
+let BCheckm8 = false;
 
 
 
@@ -1214,6 +1216,7 @@ function onClick(event) {
                         b1.board[preTile].currcolor = "green";
                     }
                 }
+                WinCheck = false;
             }
         }
         else {
@@ -1426,7 +1429,6 @@ function update() {
             if (wking == bmoves[i][1][j]) {
                 WinCheck = true;
                 console.log("check");
-                disp.innerHTML = "Check";
             }
         }
     }
@@ -1452,8 +1454,6 @@ function update() {
         b1.board[piece].pieceObj = null;
         b1.board[piece].currcolor = b1.board[piece].oricolor;
 
-
-
         movecount++;
     }
 
@@ -1476,6 +1476,19 @@ function update() {
 }
 
 function draw() {
+    //For the display:
+
+    if(WinCheck){
+        disp.innerHTML = "Check";
+    }else{
+         disp.innerHTML = "Play";
+    }
+    if(BCheckm8){
+        disp.innerHTML = "Black is checkmated";
+    }
+    if(WCheckm8){
+        disp.innerHTML = "White is checkmated";
+    }
     for (let key in b1.board) {
         ctx.fillStyle = b1.board[key].currcolor;
         ctx.fillRect(b1.board[key].x1, b1.board[key].y2, 100, 100);
