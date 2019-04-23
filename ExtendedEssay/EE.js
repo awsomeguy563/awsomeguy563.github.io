@@ -6,7 +6,7 @@ let tiles = {};
 let start = [1, 1];
 let cols = 100;
 let rows = 100;
-let end = [100, 100];
+let end = [100, 50];
 let path = [];
 
 class Tile {
