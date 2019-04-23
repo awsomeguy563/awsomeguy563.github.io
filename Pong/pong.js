@@ -140,11 +140,17 @@ class Ball {
             sc.updateScore(p2);
         }
 
-        if(this.y + this.r > height || this.y - this.r < 0){
+        if(this.y + this.r >= height ){
             console.log(1);
+            this.y = height - this.r;
             this.vely *= -1;
         }
-        
+        if(this.y - this.r < 0){
+            console.log(1);
+            this.y = 0 + this.r;
+            this.vely *= -1;
+        }
+
         //player ball collisions
 
         let player;
@@ -157,7 +163,6 @@ class Ball {
         console.log
 
         if(collide(player,this)){
-            blip.play()
             let collidepoint = this.y - player.y;
             collidepoint = collidepoint / (player.paddleheight/2);
             let angle = (Math.PI/4) * collidepoint;
@@ -179,6 +184,8 @@ class Ball {
     resetball(){
         this.x= 500;
         this.y = 250;
+        this.vely = 0;
+        this.velx *= -1;
         this.ballspeed = 5;
     }
 
