@@ -9,7 +9,6 @@ let butt1 = document.getElementById("restart");
 //Input handling:
 
 function press(evt) {
-    console.log(evt);
 
     if (evt.key == "w") {
         p1.pressUp = true;
@@ -125,9 +124,8 @@ class Ball {
         this.y = 250;
         this.r = 10;
         this.ballspeed = 5;
-        this.angle = 0;
-        this.direction = 1;
-        this.ydirection = 1;
+        this.velx = 6;
+        this.vely = 0;
     }
 
     update() {
@@ -141,54 +139,41 @@ class Ball {
             this.resetball();
             sc.updateScore(p2);
         }
+
+        if(this.y + this.r > height || this.y - this.r < 0){
+            console.log(1);
+            this.vely *= -1;
+        }
         
         //player ball collisions
-        if(collide(p1, this)){
-            let collidepoint = this.y - p1.y;
-            collidepoint = collidepoint / (p1.paddleheight/2);
-            this.angle = (Math.PI/4) * collidepoint;
-            this.ballspeed += 0.3;
-            if(this.x > width/2){
-      
-                this.direction = -1;
+
+        let player;
+        if(this.x + this.r > width/2){
+            player = p2;
+        }else{
+            player = p1;
+        }
+
+        console.log
+
+        if(collide(player,this)){
+            blip.play()
+            let collidepoint = this.y - player.y;
+            collidepoint = collidepoint / (player.paddleheight/2);
+            let angle = (Math.PI/4) * collidepoint;
+            let direction;
+            if(this.x + this.r > width/2){
+                direction = -1
             }else{
-                this.direction = 1;
+                direction = 1;
             }
-        }
-
-        if(collide(p2, this)){
-            let collidepoint = this.y - p2.y;
-            collidepoint = collidepoint / (p2.paddleheight/2);
- 
-        
-            
-            this.angle = (Math.PI/4) * collidepoint;
+            this.velx = this.ballspeed * Math.cos(angle) * direction;
+            this.vely = this.ballspeed * Math.sin(angle);
             this.ballspeed += 0.3;
-            if(this.x > width/2){
-                this.direction = -1;
-            }else{
-                this.direction = 1;
-            }
         }
-
-
         
-        let velx = this.ballspeed * Math.cos(this.angle) * this.direction;
-        let vely = this.ballspeed * Math.sin(this.angle);
-
-    
-        if(this.y + this.r > height || this.y - this.r < 0){
-            this.ydirection *= -1;
-        }
-
-        
-    
-        this.x += velx;
-        this.y += vely * (this.ydirection);
-
-        
-        
-
+        this.x += this.velx;
+        this.y += this.vely;
     }
 
     resetball(){
