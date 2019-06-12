@@ -100,8 +100,17 @@ class Paddle {
         }
 
         if (this === p2) {
-            let computerlevel = 0.2;
-            this.y += (b1.y - this.y) * computerlevel;
+            //let computerlevel = 0.2;
+            //this.y += (b1.y - this.y) * computerlevel;
+            if (this.pressUp) {
+                if (this.y - (this.paddleheight / 2) > 0) {
+                    this.y -= this.paddleSpeed;
+                }
+            } if (this.pressDown) {
+                if (this.y + (this.paddleheight / 2) < height) {
+                    this.y += this.paddleSpeed;
+                }
+            }
         }
 
 
